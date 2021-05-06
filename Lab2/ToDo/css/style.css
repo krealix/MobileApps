@@ -15,7 +15,7 @@ body{
 .list{
     list-style: none;
     background-color: #F0FFFF;
-    border: 1px double #070707;
+    border: 1px dotted #070707;
     text-align: left;
 }
 
