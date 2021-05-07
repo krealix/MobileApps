@@ -3,7 +3,7 @@
         <StackLayout class="page">
             <FlexboxLayout class="table" flexDirection="column">
                 <Label  class="table_text" v-model="expression" fontSize="24pt" text="first" height="30%"/>
-                <Label  v-model="result" class="table_text" fontSize="48pt" text="second" height="70%"/>
+                <Label  class="table_text" v-model="result"     fontSize="48pt" text="second" height="70%"/>
             </FlexboxLayout>
             <GridLayout class="buttons" columns="*, *, *, *" rows="*, *, *, *, *">
                 <Button class="button clear" @tap="onClear"         text="C" row="0" col="0" colSpan="3"/>
