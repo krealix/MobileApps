@@ -1,16 +1,20 @@
 <template>
     <Page>
-        <ActionBar title="BreakingBad Character"/>
+        <ActionBar title="Rick and Morty Universe info"/>
         <StackLayout>
           <StackLayout>
-            <label>chid:              {{this.quote_id}}</label>
-            <label>имя героя:         {{this.quote}}</label>
-            <label>день рождения:     {{this.author}}</label>
-            <label>1:                 {{this.series}}</label>
+            <label>The id of the character:              {{this.id}}</label>
+            <label>Name Character:                       {{this.name}}</label>
+            <label>The status of the character:          {{this.status}}</label>
+            <label>Name species:                         {{this.species}}</label>
+            <label>The type or subspecies:               {{this.type}}</label>
+            <label>Gender of the character:              {{this.gender}}</label>
+            <label>Name and link origin location:        {{this.origin.name}}</label>
+            <label>Name and link last known location:    {{this.location.name}}</label>
           </StackLayout>
           <StackLayout>
-            <TextField class="input" v-model="quote_id" hint="write char_id"  @returnPress= "newCharacter()"/>
-            <Button text='check' @tap= "check()"/>
+            <TextField class="input" v-model="id" hint="Write id character"  @returnPress= "Character()"/>
+            <Button class="Search" text='Lets go' @tap= "Output()"/>
           </StackLayout>
         </StackLayout>
     </Page>
@@ -23,28 +27,39 @@ import * as ApplicationSettings from '@nativescript/core/application-settings';
   export default {
     data() {
       return {
-        quote_id:'',
-        quote: '',
-        author: '',
-        series:'',
+        id:'',
+        name: '',
+        status: '',
+        species: '',
+        type: '',
+        gender: '',
+        origin: {
+          name: '',
+        },
+        location: {
+          name: '',
+        },
       }
     },
     methods: {
-      newCharacter() {
-        if(this.quote_id != ''){
-          this.msg = this.quote_id
-          console.log(this.quote_id)
+      Character() {
+        if(this.id != ''){
+          this.msg = this.id
+          console.log(this.id)
         }
       },
-      check (){
-        Http.getJSON('https://www.breakingbadapi.com/api/quotes/' + this.quote_id)
+      Output (){
+        Http.getString('https://rickandmortyapi.com/api/character/' + this.id)
         .then(
           (result) => {
             this.result = JSON.parse(result)
-            this.quote_id = this.result.quote_id
-            this.quote = this.result.quote 
-            this.author = this.result.author 
-            this.series = this.result.series
+            this.id = this.result.id
+            this.name = this.result.name 
+            this.status = this.result.status 
+            this.species = this.result.species
+            this.type = this.result.type
+            this.gender = this.result.gender
+            this.origin = this.result.origin 
             console.log(result)
           }
         )
@@ -63,5 +78,10 @@ import * as ApplicationSettings from '@nativescript/core/application-settings';
     }
     .text{
       text-align: center;
+    }
+    .Search{
+      border-radius: 25%;
+      height: 5%;
+      width: 20%;
     }
 </style>
