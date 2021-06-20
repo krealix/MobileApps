@@ -1,110 +1,140 @@
 <template>
-  <Page  class="app">
-    <StackLayout>
-      <TextField class="input" v-model="newText" hint="Input ur task"  @returnPress= "newTask()"/>
-      <ScrollView orientation="horizontal">
-        <ListView  class="task" for="task in tasks">
+  <Page class="page">
+    <ActionBar title="MyTasks" class="action-bar" />
+    <TabView height="100%" android-tabs-position="bottom" selected-tab-text-color="#53ba82" tab-text-font-size="15">
+      <TabViewItem title="Do" text-transform="uppercase">
+        <StackLayout orientation="vertical" width="100%" height="100%">
+          <GridLayout columns="2*,*" rows="*" width="100%" height="25%">
+            <TextField v-model="textFieldValue" col="0" row="0" hint="Input your task" editable="true" @returnPress="onButtonTap"/>
+            <Button col="1" row="0" text="Input" @tap="onButtonTap"/>
+          </GridLayout>
+          <ListView class="list-group" for="todo in todos" style="height:75%" separator-color="transparent" @itemTap="onItemTap">
+            <v-template>
+              <Label id="active-task" :text="todo.name" class="list-group-item-heading" text-wrap="true"/>
+            </v-template>
+          </ListView>
+        </StackLayout>
+      </TabViewItem>
+      <TabViewItem title="Dones" text-transform="uppercase">
+        <ListView class="list-group" for="done in dones" style="height:75%" separator-color="transparent" @itemTap="onDoneTap">
           <v-template>
-            <GridLayout columns="250%, 55, 55">
-            <label  class="task-text done" v-if="task.done" textWrap="true" col="0">{{task.title}}</label>
-            <label  class="task-text" v-else  @tap="edit(task.id, task.title)" textWrap="true" col="0">{{task.title}}</label>
-            <Button  class="btn check-btn" text="R" @tap="taskDone(task.id)" col="1"/>
-            <Button  class="btn remove-btn" text="D" @tap="remove(task.id)" col="2"/> 
-            </GridLayout>
+            <Label id="completed-task" :text="done.name" class="list-group-item-heading" text-wrap="true"/>
           </v-template>
         </ListView>
-      </ScrollView>
-    </StackLayout>
+      </TabViewItem>
+    </TabView>
   </Page>
 </template>
 
+
 <script>
-import {ApplicationSettings} from '@nativescript/core'
+import * as ApplicationSettings from '@nativescript/core/application-settings';
 export default {
-  data () {
+  data() {
     return {
-      newText: '',
-      tasks: []
-    }
+        dones: [],
+        todos: [],
+        textFieldValue: '',
+    };
   },
-  mounted(){
-    if(ApplicationSettings.getString('tasks')){
-      this.tasks=Object.values(JSON.parse(ApplicationSettings.getString('tasks')));
+    mounted(){
+    if(ApplicationSettings.getString('todos')){
+        this.todos=Object.values(JSON.parse(ApplicationSettings.getString('todos')));
     }
   },
   methods: {
-    newTask () {
-      if(this.newText != ''){
-        this.tasks.push({
-          id: Math.random(),
-          title: this.newText,
-          done: false
-        });
-        this.newText = '';
-      }
-      this.save();
-    },
-    taskDone (id) {
-      this.tasks = this.tasks.map(task => {
-        if (task.id == id) task.done = !task.done;
-        return task;
-      })
-      this.save();
-    },
-    remove (id) {
-      this.tasks = this.tasks.filter(task => task.id !== id);
-      this.save();
+    onItemTap(args) {
+      console.log(`Item with index: ${args.index}`);
+      action('Further action', 'Cancel', ['Done','Delete',])
+        .then(result => {
+        console.log(result); 
+        switch (result) {
+          case 'Done':
+            this.dones.unshift(args.item); 
+            this.todos.splice(args.index, 1); 
+            this.save();
+            break;
+          case 'Delete':
+            this.todos.splice(args.index, 1); 
+            this.save();
+            break;
+          case 'Cancel' || undefined: 
+            break;
+        }
+      });
     },
     save(){
-      let toSave = Object.assign({}, this.tasks);
-      ApplicationSettings.setString('tasks', JSON.stringify(toSave));
+        let toSave = Object.assign({}, this.todos);
+        ApplicationSettings.setString('todos', JSON.stringify(toSave));
     },
-    
-    edit(id, old_text) {
-      prompt({
-        title: "Change task",
-        message: "New task:",
-        okButtonText: "Change",
-        cancelButtonText: "Cancel",
-        defaultText: old_text,
-      })
+    onDoneTap: function(args) {
+      action('Not finished yet?', 'Cancel', ['Replace in do', 'Delete'])
       .then(result => {
-         this.tasks.forEach(task => {
-          if (task.id == id && result.text != ''){
-            task.title = result.text;
+        console.log(result); 
+        switch (result) {
+          case 'Replace in do': 
+            this.todos.unshift(args.item);
+            this.dones.splice(args.index, 1); 
             this.save();
-          }    
-         });
-      })
-    }
-  }
-}
+          break;
+          case 'Delete':
+            this.todos.splice(args.index, 1); 
+            this.save();
+            break;
+        }
+      });
+    },
+    onButtonTap() {
+      if (!this.textFieldValue) {
+        return;
+      }
+      console.log(`New task added: ${this.textFieldValue}.`);     
+      this.todos.unshift({
+        name: this.textFieldValue,
+      });     
+      this.textFieldValue = '';
+      this.save();
+    },
+  },
+};
 </script>
 
-<style>
-.app{
-  background: linear-gradient(0.25turn, #3f87a6, #ebf8e1, #f69d3c);
-  }
-.task-text{
-  background-color: white;
-  border-radius: 10%;
-  color: black;
-  text-align: center;
+<style scoped>
+TextField {
+  font-size: 20;
+  color: #53ba82;
+  margin-top: 10;
+  margin-bottom: 10;
+  margin-right: 5;
+  margin-left: 20;
+  height: 60;
 }
-.done {
-  text-decoration: line-through;
-}
-.btn{
-  background-color: green;
-  border-radius: 50%;
-  color: #ffffff;
-  margin: 30px 10px;
-}
-.input{
-  background-color: yellow
-  border-radius: 50%;
+button {
+  font-size: 12;
+  font-weight: bold;
   color: white;
-  margin: 50px 30px;
-  text-align: center;
+  background-color: #53ba82;
+  height: 40;
+  margin-top: 10;
+  margin-bottom: 10;
+  margin-right: 10;
+  margin-left: 10;
+  border-radius: 20px;
+}
+#active-task {
+  font-size: 20;
+  font-weight: bold;
+  color: #53ba82;
+  margin-left: 20;
+  padding-top: 5;
+  padding-bottom: 10;
+}
+#completed-task {
+  font-size: 20;
+  color: #d3d3d3;
+  margin-left: 20;
+  padding-top: 5;
+  padding-bottom: 10;
+  text-decoration: line-through;
 }
 </style>
