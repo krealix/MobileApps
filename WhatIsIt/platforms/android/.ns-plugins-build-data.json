@@ -1,0 +1,10 @@
+{
+	"@nativescript/core": {
+		"C:\\Users\\krealix\\Desktop\\MobileApps\\WhatIsIt\\node_modules\\@nativescript\\core\\platforms\\android\\native-api-usage.json": "9b365312a70ec5732bab0e2970fe2a8dcbe8d97a",
+		"C:\\Users\\krealix\\Desktop\\MobileApps\\WhatIsIt\\node_modules\\@nativescript\\core\\platforms\\android\\widgets-release.aar": "00953f345b5812f5abcf4eb6fc0b95672d99b580"
+	},
+	"nativescript-socketio": {
+		"C:\\Users\\krealix\\Desktop\\MobileApps\\WhatIsIt\\node_modules\\nativescript-socketio\\platforms\\android\\include.gradle": "6e9565dc5bc1beafcd8fb173e7cf1748cfbd558d",
+		"C:\\Users\\krealix\\Desktop\\MobileApps\\WhatIsIt\\node_modules\\nativescript-socketio\\platforms\\android\\fancylogger-release.aar": "3d953e0e92d87fa89414276ac07edc7347a92b5d"
+	}
+}
